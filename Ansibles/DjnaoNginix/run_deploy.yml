@@ -1,0 +1,14 @@
+- hosts: hostgroups
+  gather_facts: no
+  # become_method: su
+  become: True
+  roles:
+    - role: 'deploy/django-demo-app/nginx'
+      vars:
+        gunicorn_port: 9001
+        
+    - role: 'deploy/django-demo-app/db'
+      vars:
+        db_user: "user1"
+        db_pass: "vQsece4b"
+        db_name: "database1"

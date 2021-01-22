@@ -1,0 +1,5 @@
+ansible_host: 192.168.1.106
+ansible_user: vap
+ansible_ssh_private_key_file: ~/Desktop/vap_key/id_rsa 
+ansible_ssh_port: 2222
+ansible_python_interpreter: /usr/bin/python3

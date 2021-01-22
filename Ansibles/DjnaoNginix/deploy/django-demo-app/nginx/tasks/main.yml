@@ -1,0 +1,38 @@
+---
+- name: Install nginx
+  apt:
+    name: nginx
+    state: present
+
+- name: Deactivate the default nginx from sites-available
+  file:
+    path: /etc/nginix/sites-available/default
+    state: absent
+
+# - name: Deactivate/Rename the default nginx from sites-available
+#   command: mv /etc/nginx/sites-available/default /etc/nginx/sites-available/default_backup
+
+- name: Copy virtual.domain.net
+  template:
+    src: virtual.domain.net
+    dest: /etc/nginx/sites-available/
+
+- name: Activate the virtual.domain.net site
+  file:
+    src: /etc/nginx/sites-available/virtual.domain.net
+    dest: /etc/nginx/sites-enabled/virtual.domain.net
+    state: link
+
+- name: Restart nginx service
+  systemd:
+    state: restarted
+    name: nginx
+
+- name: Add firewall rule Allow 80
+  community.general.ufw:
+  # state: disabled
+    state: enabled
+    rule: allow
+    port: '80'
+  # proto: tcp
+    # delete: yes

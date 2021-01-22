@@ -1,0 +1,52 @@
+---
+- hosts: hostgroups
+  become_user: rootovi4
+  become_method: su
+  become: yes
+  # gather_facts: no  
+
+  # pre_tasks:
+  #   - debug:
+  #       msg: "remote_user is not accessible, ansible_user is {{ ansible_user }}"
+  
+  # tasks:
+  #   - shell: whoami
+  #     register: a
+  #   - shell: whoami
+  #     become_user: valera
+  #     become_method: su
+  #     become: yes
+  #     register: b
+      
+     
+
+
+  #   - shell: whoami
+  #     become_user: valera
+  #     become_method: su
+  #     register: c
+
+  #   - debug: var=a.stdout
+  #   - debug: var=b.stdout
+  #   - debug: var=c.stdout
+
+  tasks:
+    - name: Install tree
+      package: 
+        name: tree
+        state: present
+        use: apt  
+      
+   
+  # tasks:
+  #   - name: Tell SELinux SSH's new port.
+  #     remote_user: valera
+  #     become_user: valera
+  #     seport: 
+  #       ports: 2849
+  #       proto: tcp
+  #       setype: ssh_port_t
+  #       state: present
+    
+
+    

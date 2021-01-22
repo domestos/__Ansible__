@@ -1,0 +1,12 @@
+server {
+    listen 80;
+    server_name virtual.domain.net;
+
+    location /static/ {
+        alias ~/;
+    }
+
+    location / {
+        proxy_pass http://localhost:{{gunicorn_port}};
+    }
+}

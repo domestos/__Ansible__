@@ -1,0 +1,36 @@
+---
+- hosts: hostgroups
+  become_method: su
+  become: true
+ 
+  
+  tasks:
+    - name: Install tree
+      # become_user: valera
+     
+      package:
+        name: tree
+        state: present
+        # state: absent
+        use: apt
+  
+
+  tasks:
+    - shell: whoami
+      register: c
+      # become_user: valera
+      # become_method: su
+      # become: yes
+    - debug: var=c.stdout
+  # tasks:
+  #   - name: Install tree
+  #     become_user: valera
+  #     become_method: su
+  #     become: yes
+  #     package: 
+  #       name: tree
+  #       state: absent
+  #       use: apt  
+
+      
+      

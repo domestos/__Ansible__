@@ -1,0 +1,65 @@
+---
+- hosts: hostgroups
+  become_method: su
+  become: true
+  vars:
+    password: my_pass
+    ssh_port: 2222
+
+  handlers:
+    - name: restart ssh
+      service:
+        name: sshd
+        state: restarted
+
+  tasks:
+    # - name: Tell SELinux about SSH's new port.
+    #   seport:
+    #     ports: 2222
+    #     proto: tcp
+    #     setype: ssh_port_t
+    #     state: present
+
+    - name: Make sure SSH is more secure.
+      lineinfile:
+        dest: /etc/ssh/sshd_config
+        regexp: "{{ item.regexp }}"
+        line: "{{ item.line }}"
+        state: present
+        validate: 'sshd -T -f %s'
+      with_items:
+        - regexp: "^PasswordAuthentication"
+          line: "PasswordAuthentication no"        
+        - regexp: "^PermitRootLogin"
+          line: "PermitRootLogin no"
+        - regexp: "^Port"
+          line: "Port {{ ssh_port }}"
+      notify: restart ssh
+
+    - name: Add user ansibleuser
+      user:
+        name: ansibleuser
+        password: "{{ password | password_hash('sha512') }}"
+        update_password: on_create
+    - name: Add sudo group rights for develoyment user.
+      lineinfile:
+        dest: /etc/sudoers
+        regexp: '^ansibleuser'
+        # line: 'ansibleuser ALL=(ALL) NOPASSWD:ALL'
+        line: 'ansibleuser ALL=(ALL:ALL) ALL'
+        state: present
+        validate: 'visudo -cf %s'      
+  
+    - name: Add rule Allow {{ ssh_port }}
+      community.general.ufw:
+        # state: disabled
+        state: enabled
+        rule: allow
+        port: "'{{ ssh_port }}'"
+        # proto: tcp
+        # delete: yes
+
+    - name: Enabled UFW
+      community.general.ufw:
+        # state: disabled
+        state: enabled

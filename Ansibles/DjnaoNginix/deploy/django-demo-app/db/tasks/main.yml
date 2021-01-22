@@ -1,0 +1,44 @@
+---
+- name: Add Postgeres repo for Ubuntu 20.04
+  # sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+  apt_repository:
+    repo: deb http://apt.postgresql.org/pub/repos/apt focal-pgdg main
+    state: present
+    update_cache: no
+
+- name: Add official PG publick key
+  # wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+  apt_key:
+    url: https://www.postgresql.org/media/keys/ACCC4CF8.asc 
+    state: present
+
+- name: Make sure psycopg2 is installed
+  pip:
+    name: psycopg2
+    state: present
+
+- name: Install PostgerSQL 12
+  # apt update && apt install ...
+  apt:
+    name:
+      - postgresql-12
+      - postgresql
+      - postgresql-contrib
+      - libpq5
+      # - libpg-dev
+    state: present
+    update_cache: yes
+
+
+- name: Create DB user
+  postgresql_user:
+    name: "{{db_user}}"
+    password: "{{db_pass}}"
+  become_user: postgres
+
+- name: Create DB instance.
+  postgresql_db:
+    name: "{{db_name}}"
+    owner: "{{db_user}}"
+  become: yes
+  become_user: postgres

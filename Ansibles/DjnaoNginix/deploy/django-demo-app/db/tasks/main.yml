@@ -12,33 +12,103 @@
     url: https://www.postgresql.org/media/keys/ACCC4CF8.asc 
     state: present
 
-- name: Make sure psycopg2 is installed
-  pip:
-    name: psycopg2
+- name: Install PIP3
+  apt:
+    name: 
+      - python3
+      - python3-pip
+      - python3-psycopg2
     state: present
+    update_cache: yes
+
+# - name: Make sure psycopg2 is installed
+#   pip:
+#     name: psycopg2
+#     state: present
+  
 
 - name: Install PostgerSQL 12
   # apt update && apt install ...
   apt:
     name:
       - postgresql-12
-      - postgresql
       - postgresql-contrib
-      - libpq5
+      - libpq5      
       # - libpg-dev
     state: present
     update_cache: yes
 
-
+#===  Create User ========
 - name: Create DB user
   postgresql_user:
     name: "{{db_user}}"
     password: "{{db_pass}}"
   become_user: postgres
 
+#===  Create DataBase ========
 - name: Create DB instance.
   postgresql_db:
     name: "{{db_name}}"
     owner: "{{db_user}}"
   become: yes
   become_user: postgres
+
+#===  Edit postgres.conf Allow listen_address="*" ========
+- name: Find main postgres config file
+  command: bash -c "sudo -u postgres psql -U postgres -d postgres -t -c 'show config_file' | sed 's/ //g' "
+  become: yes
+  ignore_errors: true
+  register: pg_main_conf
+ 
+- name: was main config file found
+  debug: var=pg_main_conf.stdout
+ 
+- name: postgresql should listen on all ports
+  lineinfile: dest="{{ pg_main_conf.stdout }}"
+                regexp="^listen_addresses"
+                line="listen_addresses = '*'" state=present
+  become: yes
+
+#===  Edit pg_hba.conf ::  host database user 0.0.0.0/0  md5 ========
+- name: find hba file
+  command: bash -c "sudo -u postgres psql -U postgres -d postgres -t -c 'show hba_file' | sed 's/ //g' "
+  become: yes
+  ignore_errors: true
+  register: pg_hba_conf
+
+- name: was main config file found
+  debug: var=pg_hba_conf.stdout
+
+- name: Grant users joe and simon access to databases sales and logistics from ipv6 localhost ::1/128 using peer authentication.
+  community.general.postgresql_pg_hba:
+    dest: "{{ pg_hba_conf }}"
+    contype: host
+    users:  "{{db_user}}"
+    source: 0.0.0.0/0
+    databases: "{{db_name}}"
+    method: md5
+    create: true
+
+# - name: postgresql should allow access to host
+#   copy:
+#     dest: "{{ pg_hba_conf.stdout }}"
+#     content: |
+#       local   all   postgres   trust 
+#       local   all   all        trust
+#       host    all   all        0.0.0.0/0   md5
+#   become: yes 
+
+- name: restart postgresql
+  service: name=postgresql state=restarted
+  become: yes
+
+#===  Firewall rule ========
+- name: Add rule Allow {{ db_port }}
+  community.general.ufw:
+    #state: disabled
+    state: enabled
+    rule: allow
+    port: "'{{ db_port }}'"
+    # proto: tcp
+    # delete: yes
+  become: yes

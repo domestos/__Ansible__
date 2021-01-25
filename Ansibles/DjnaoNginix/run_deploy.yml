@@ -9,6 +9,8 @@
         
     - role: 'deploy/django-demo-app/db'
       vars:
+        db_port: 5432
         db_user: "user1"
-        db_pass: "vQsece4b"
+        db_pass: "my_pass"
         db_name: "database1"
+        

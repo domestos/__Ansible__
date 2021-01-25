@@ -1,8 +1,10 @@
 ---
-- hosts: hostgroups
+- hosts: ub
   become_method: su
+  # become_user: valera
   become: true
   vars:
+    new_user: ansibleuser
     password: my_pass
     ssh_port: 2222
 
@@ -19,6 +21,29 @@
     #     proto: tcp
     #     setype: ssh_port_t
     #     state: present
+    
+
+    - name: Add user ansibleuser
+      user:
+        name: "{{ new_user }}"
+        password: "{{ password | password_hash('sha512') }}"
+        update_password: on_create
+   
+    - name: Add sudo group rights for develoyment user.
+      lineinfile:
+        dest: /etc/sudoers
+        regexp: '^ansibleuser'
+        # line: 'ansibleuser ALL=(ALL) NOPASSWD:ALL'
+        line: 'ansibleuser ALL=(ALL:ALL) ALL'
+        state: present
+        validate: 'visudo -cf %s'      
+  
+    # You need have a generated ssh-key 
+    - name: Set authorized key for new_user copying  ssh_key from current user
+      ansible.posix.authorized_key:
+        user: "{{ new_user }}"
+        state: present
+        key: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_rsa.pub') }}"
 
     - name: Make sure SSH is more secure.
       lineinfile:
@@ -36,20 +61,6 @@
           line: "Port {{ ssh_port }}"
       notify: restart ssh
 
-    - name: Add user ansibleuser
-      user:
-        name: ansibleuser
-        password: "{{ password | password_hash('sha512') }}"
-        update_password: on_create
-    - name: Add sudo group rights for develoyment user.
-      lineinfile:
-        dest: /etc/sudoers
-        regexp: '^ansibleuser'
-        # line: 'ansibleuser ALL=(ALL) NOPASSWD:ALL'
-        line: 'ansibleuser ALL=(ALL:ALL) ALL'
-        state: present
-        validate: 'visudo -cf %s'      
-  
     - name: Add rule Allow {{ ssh_port }}
       community.general.ufw:
         # state: disabled

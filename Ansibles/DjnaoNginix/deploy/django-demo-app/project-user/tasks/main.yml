@@ -1,0 +1,6 @@
+- name: Create project user
+  user:
+    name: "{{ project_user }}" # this var is init in DjnaoNginix->main.yml file
+    password: "{{ user_password | password_hash('sha512') }}" #  this var is init in  main.yml of this role and should be encrypted
+    shell: /bin/bash
+    update_password: on_create 

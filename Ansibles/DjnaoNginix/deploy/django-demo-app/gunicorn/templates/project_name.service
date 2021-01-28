@@ -1,0 +1,14 @@
+[Unit]
+Description=Django Project
+
+[Service]
+Type=simple
+PIDFile={{ project_dir }}/gunicorn.pid
+User=
+Group=
+EnviromentFile={{ project_dir }}/
+WorkingDirectory={{ project_dir }}/venv/bin/gunicorn -- config {{etcdir}}/gunicorn.conf.py config.wsgi:application
+ExecStart=
+gunicorn.conf.py config.wsgi:application
+ExecReload=/bin/kill -s HUP $MAINPID
+ExecStop=/bin/kill -s TERM $MAINPID

@@ -22,6 +22,7 @@
       user:
         name: "{{ new_user }}"
         password: "{{ password | password_hash('sha512') }}"
+        shell: /bin/bash
         update_password: on_create
    
     - name: Add sudo group rights for develoyment user.

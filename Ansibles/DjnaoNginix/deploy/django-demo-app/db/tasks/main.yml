@@ -79,24 +79,25 @@
 - name: was main config file found
   debug: var=pg_hba_conf.stdout
 
-- name: Grant users joe and simon access to databases sales and logistics from ipv6 localhost ::1/128 using peer authentication.
-  community.general.postgresql_pg_hba:
-    dest: "{{ pg_hba_conf }}"
-    contype: host
-    users:  "{{db_user}}"
-    source: 0.0.0.0/0
-    databases: "{{db_name}}"
-    method: md5
-    create: true
-
-# - name: postgresql should allow access to host
-#   copy:
-#     dest: "{{ pg_hba_conf.stdout }}"
-#     content: |
-#       local   all   postgres   trust 
-#       local   all   all        trust
-#       host    all   all        0.0.0.0/0   md5
+# - name: Grant users joe and simon access to databases sales and logistics from ipv6 localhost ::1/128 using peer authentication.
+#   community.general.postgresql_pg_hba:
+#     dest: "{{ pg_hba_conf }}"
+#     contype: host
+#     users:  "{{db_user}}"
+#     source: 0.0.0.0/0
+#     databases: "{{db_name}}"
+#     method: md5
+#     create: true
 #   become: yes 
+
+- name: postgresql should allow access to host
+  copy:
+    dest: "{{ pg_hba_conf.stdout }}"
+    content: |
+      local   all   postgres   trust 
+      local   all   all        trust
+      host    all   all        0.0.0.0/0   md5
+  become: yes 
 
 - name: restart postgresql
   service: name=postgresql state=restarted

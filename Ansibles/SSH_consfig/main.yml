@@ -1,11 +1,14 @@
 ---
-- hosts: ub
+- hosts: all
   become_method: su
   # become_user: valera
   become: true
+
+  vars_files:
+    - vars/sicretpassword.yml
+
   vars:
     new_user: ansibleuser
-    password: my_pass
     ssh_port: 2222
 
   handlers:
@@ -15,14 +18,6 @@
         state: restarted
 
   tasks:
-    # - name: Tell SELinux about SSH's new port.
-    #   seport:
-    #     ports: 2222
-    #     proto: tcp
-    #     setype: ssh_port_t
-    #     state: present
-    
-
     - name: Add user ansibleuser
       user:
         name: "{{ new_user }}"
@@ -38,7 +33,7 @@
         state: present
         validate: 'visudo -cf %s'      
   
-    # You need have a generated ssh-key 
+    # You need have the already generated ssh-key 
     - name: Set authorized key for new_user copying  ssh_key from current user
       ansible.posix.authorized_key:
         user: "{{ new_user }}"

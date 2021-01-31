@@ -1,0 +1,29 @@
+---
+- name: install supervisor
+  apt:
+    name: supervisor
+    state: present
+
+
+- name: Copy supervisor config (this file will run gunicorn)
+  template:
+    src: supervisor_project.j2
+    dest: "/etc/supervisor/conf.d/project.conf"
+  # become_user: "{{ project_user }}"
+
+
+- name: Start supervisor
+  systemd:
+    name: supervisor
+    state: restarted
+    # demon_reload: yes
+    # enabled: yes
+
+- name: Add firewall rule Allow 9002
+  community.general.ufw:
+  # state: disabled
+    state: enabled
+    rule: allow
+    port: '9002'
+  # proto: tcp
+    # delete: yes

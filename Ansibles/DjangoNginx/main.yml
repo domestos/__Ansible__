@@ -32,6 +32,14 @@
     - role: 'deploy/django-demo-app/nginx'
       vars:
         gunicorn_port: 9001
+      tags: nginx
     
+    # GUNICORN
+    - role: 'deploy/django-demo-app/gunicorn'
+      vars:
+        gunicorn_port: 9001
+      tags: gunicorn
     
-     
+    # SUPERVISOR
+    - role: 'deploy/django-demo-app/supervisor' 
+      tags: supervisor

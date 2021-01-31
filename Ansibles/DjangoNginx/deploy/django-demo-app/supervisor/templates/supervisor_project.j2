@@ -1,0 +1,19 @@
+[program:gunicorn]
+command={{ project_dir }}/run_gunicorn.sh
+# command=/home/ubuntu/.local/bin/gunicorn --workers 3 --bind unix:/home/ubuntu/django_app/app.sock my_project.wsgi:application
+environment=PYTHONPATH={{project_dir}}/venv/lib
+stdout_logfile=/var/log/gunicorn/gunicorn.log 
+user={{ project_user }}
+process_name=%(program_name)s
+numproc=4
+autostart=1
+autorestart=1
+redirect_stderr=true
+stopsignal=KILL
+
+[inet_http_server]
+port=0.0.0.0:9002
+;username=django    
+;password=my_pass
+
+

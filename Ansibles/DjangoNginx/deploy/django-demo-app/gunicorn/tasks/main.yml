@@ -1,0 +1,40 @@
+---
+# - name: Create main dirs for {{project_dir}}
+#   file:
+#     path: "{{ project_dir }}"
+#     state: directory
+
+- name: Copy gunicorn configs
+  template:
+    src: gunicorn.conf.py
+    dest: "{{ project_dir }}/gunicorn.conf.py"
+  become_user: "{{ project_user }}"
+
+- name: Copy bash script run_gunicorn.sh
+  template:
+    src: run_gunicorn.sh
+    dest: "{{ project_dir }}/run_gunicorn.sh"
+  become_user: "{{ project_user }}"
+
+- name: Change permission 
+  file:
+    path: "{{ project_dir }}/run_gunicorn.sh"  
+    mode: +x 
+
+
+# - nema: Copy gunicorn enviroment file
+#   template:
+#     src: gunicorn.env
+#     dest: "{{ project_dir }}/gunicorn.env"
+  
+# - name: Copy gunicorn system unit
+#   template:
+#     src: project_name.service
+#     dest: /etc/systemd/system/project_name.service
+
+# - name: Restart c service
+#   systemd:
+#     name: project_name
+#     state: restarted
+#     demon_reload: yes
+#     enabled: yes

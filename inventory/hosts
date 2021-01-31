@@ -1,5 +1,5 @@
 [sshd]
-ub ansible_host=192.168.40.43 ansible_user=valera  ansible_ssh_port=22 ansible_password=my_pass
+ub ansible_host=192.168.1.106 ansible_user=valera  ansible_ssh_port=22 ansible_password=my_pass
  
 [hostgroups]
 ubuntu 

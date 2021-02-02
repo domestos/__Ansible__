@@ -3,7 +3,12 @@
 #   file:
 #     path: "{{ project_dir }}"
 #     state: directory
-
+- name: Install Gunicorn in virtualenveroment  
+  pip:
+    name: gunicorn
+    virtualenv: "{{ project_dir }}/venv"
+  become_user:  "{{ project_user }}"
+  
 - name: Copy gunicorn configs
   template:
     src: gunicorn.conf.py

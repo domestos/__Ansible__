@@ -1,8 +1,17 @@
 server {
     listen 80;
     server_name virtual.domain.net;
-   
+    
     location = /favicon.ico { access_log off; log_not_found off; }
+   
+    location /ws/ {
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_redirect off;
+        proxy_pass http://localhost:{{daphne_port}};
+    }
+
     
     location /static/ {
         alias /home/django/project/config/static/;
@@ -16,11 +25,4 @@ server {
         proxy_pass http://localhost:{{gunicorn_port}};
     }
 
-    location /ws/ {
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection "upgrade";
-        proxy_redirect off;
-        proxy_pass http://localhost:8088;
-    }
 }

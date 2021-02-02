@@ -1,0 +1,17 @@
+- name: Install Daphne in virtualenveroment  
+  pip:
+    name: daphne
+    virtualenv: "{{ project_dir }}/venv"
+  become_user:  "{{ project_user }}"
+
+
+- name: Copy run_daphne.sh Script 
+  template:
+    src: run_daphne.sh
+    dest: "{{ project_dir }}/run_daphne.sh"
+  become_user: "{{ project_user }}"
+
+- name: Change permission 
+  file:
+    path: "{{ project_dir }}/run_daphne.sh"  
+    mode: +x 

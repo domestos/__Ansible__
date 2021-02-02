@@ -39,7 +39,14 @@
       vars:
         gunicorn_port: 9001
       tags: gunicorn
+
+    # DAPHNE
+    - role: 'deploy/django-demo-app/daphne'
+      tags: daphne
     
     # SUPERVISOR
     - role: 'deploy/django-demo-app/supervisor' 
+      vars:
+        daphne_port: 9003
+    
       tags: supervisor

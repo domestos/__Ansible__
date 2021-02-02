@@ -5,10 +5,16 @@
     state: present
 
 
-- name: Copy supervisor config (this file will run gunicorn)
+- name: Copy supervisor_gunicorn config (this file will run Gunicorn)
   template:
-    src: supervisor_project.j2
-    dest: "/etc/supervisor/conf.d/project.conf"
+    src: supervisor_gunicorn.j2
+    dest: "/etc/supervisor/conf.d/supervisor_gunicorn.conf"
+
+
+- name: Copy supervisor_daphne config (this file will run Daphne)
+  template:
+    src: supervisor_daphne.j2
+    dest: "/etc/supervisor/conf.d/supervisor_daphne.conf"
   # become_user: "{{ project_user }}"
 
 

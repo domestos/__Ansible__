@@ -1,0 +1,6 @@
+[ssh_congif]
+ub ansible_host=172.17.0.2 ansible_user=varenik ansible_ssh_port=22 ansible_password=pass2
+
+
+[hostgroups]
+install_rsyslog_group

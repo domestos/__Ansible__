@@ -1,0 +1,20 @@
+- name: Install rsyslog
+  hosts: install_rsyslog_group
+  become: true
+
+  tasks:
+  - name: Update cache
+    apt: 
+        update_cache: yes
+  - name: Upgrade
+    apt:
+        upgrade: yes
+        
+  - name: Install Rsyslog
+    apt:
+        pkg: rsyslog
+
+  - name: Copy rsyslog config
+    template:
+        src: rsyslog.conf
+        dest: /etc/

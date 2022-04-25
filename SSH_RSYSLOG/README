@@ -1,0 +1,14 @@
+Encrypt the file with password for ansibleuser  (password: my_pass):
+    ansible-vault encrypt /home/valera/Documents/__Ansible_config_ssh_cert__/playbooks/SSH_consfig/vars/sicretpassword.yml
+
+TO DO:
+    - create user: ansibleuser
+    - edit /etc/sudoers and give sudo permissions for ansibleuser
+    - copy public key to remote host
+    - config  /etc/ssh/sshd_config:
+            * Disable passwor Auth for ssh 
+            * Forbbiden Auth  for root user
+            * set port
+    - Enable Firewall and add ssh port for Allow rule
+
+
